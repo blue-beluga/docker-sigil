@@ -1,0 +1,20 @@
+# encoding: UTF-8
+
+FROM <%= ENV.fetch('FROM') %>
+MAINTAINER The Blue Beluga <admin@bluebeluga.io>
+
+ENV SIGIL_VERSION=<%= ENV.fetch('SIGIL_VERSION') %>
+ENV SIGIL_SHA256=<%= ENV.fetch('SIGIL_SHA256') %>
+
+RUN apk-install --no-cache --virtual .build-deps curl && \
+    curl -sSLO https://github.com/gliderlabs/sigil/releases/download/v${SIGIL_VERSION}/sigil_${SIGIL_VERSION}_Linux_x86_64.tgz && \
+    echo "${SIGIL_SHA256}  sigil_${SIGIL_VERSION}_Linux_x86_64.tgz" | sha256sum -c - && \
+    tar -xzf sigil_${SIGIL_VERSION}_Linux_x86_64.tgz -C /bin && \
+    rm sigil_${SIGIL_VERSION}_Linux_x86_64.tgz && \
+    apk del .build-deps curl && \
+    rm -rf /var/cache/apk/* && \
+    mkdir /work
+
+WORKDIR /work
+ENTRYPOINT ["/bin/sigil"]
+CMD ["--help"]
