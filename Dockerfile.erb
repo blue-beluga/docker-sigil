@@ -18,3 +18,14 @@ RUN apk-install --no-cache --virtual .build-deps curl && \
 WORKDIR /work
 ENTRYPOINT ["/bin/sigil"]
 CMD ["--help"]
+
+
+
+curl -sSLO https://dl.gliderlabs.com/sigil/latest/$(uname -sm|tr \  _).tgz
+echo "c503bc15fba88d08fe7ba350fc02e61c4757d13f349f56cf5b7977f8139d5843  $(uname -sm|tr \  _).tgz" | sha256sum -c -
+tar -zx $(uname -sm|tr \  _).tgz -C /usr/local/bin
+rm $(uname -sm|tr \  _).tgz
+
+
+curl https://dl.gliderlabs.com/sigil/latest/$(uname -sm|tr \  _).tgz \
+    | tar -zxC /usr/local/bin
