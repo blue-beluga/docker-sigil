@@ -3,29 +3,24 @@
 FROM <%= ENV.fetch('FROM') %>
 MAINTAINER The Blue Beluga <admin@bluebeluga.io>
 
+LABEL vendor="The Blue Beluga Company"
+LABEL io.bluebeluga.alpine.description="Sigil"
+LABEL io.bluebeluga.alpine.version="<%= ENV.fetch('TAG') %>"
+LABEL io.bluebeluga.alpine.git-revision="<%= ENV.fetch('GIT_REVISION') %>"
+LABEL io.bluebeluga.alpine.release-date="<%= Time.now.strftime('%B %d, %Y %H:%M') %>"
+
 ENV SIGIL_VERSION=<%= ENV.fetch('SIGIL_VERSION') %>
 ENV SIGIL_SHA256=<%= ENV.fetch('SIGIL_SHA256') %>
 
-RUN apk-install --no-cache --virtual .build-deps curl && \
-    curl -sSLO https://github.com/gliderlabs/sigil/releases/download/v${SIGIL_VERSION}/sigil_${SIGIL_VERSION}_Linux_x86_64.tgz && \
-    echo "${SIGIL_SHA256}  sigil_${SIGIL_VERSION}_Linux_x86_64.tgz" | sha256sum -c - && \
-    tar -xzf sigil_${SIGIL_VERSION}_Linux_x86_64.tgz -C /bin && \
-    rm sigil_${SIGIL_VERSION}_Linux_x86_64.tgz && \
-    apk del .build-deps curl && \
-    rm -rf /var/cache/apk/* && \
-    mkdir /work
+RUN apk-install --no-cache --virtual .build-deps curl \
+ && curl -sSLO https://github.com/gliderlabs/sigil/releases/download/v${SIGIL_VERSION}/sigil_${SIGIL_VERSION}_Linux_x86_64.tgz \
+ && echo "${SIGIL_SHA256}  sigil_${SIGIL_VERSION}_Linux_x86_64.tgz" | sha256sum -c - \
+ && tar -xzf sigil_${SIGIL_VERSION}_Linux_x86_64.tgz -C /bin \
+ && rm sigil_${SIGIL_VERSION}_Linux_x86_64.tgz \
+ && apk del .build-deps curl \
+ && rm -rf /var/cache/apk/* \
+ && mkdir /work
 
 WORKDIR /work
 ENTRYPOINT ["/bin/sigil"]
 CMD ["--help"]
-
-
-
-curl -sSLO https://dl.gliderlabs.com/sigil/latest/$(uname -sm|tr \  _).tgz
-echo "c503bc15fba88d08fe7ba350fc02e61c4757d13f349f56cf5b7977f8139d5843  $(uname -sm|tr \  _).tgz" | sha256sum -c -
-tar -zx $(uname -sm|tr \  _).tgz -C /usr/local/bin
-rm $(uname -sm|tr \  _).tgz
-
-
-curl https://dl.gliderlabs.com/sigil/latest/$(uname -sm|tr \  _).tgz \
-    | tar -zxC /usr/local/bin

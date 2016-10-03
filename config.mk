@@ -1,7 +1,9 @@
+# encoding: UTF-8
+
 GIT_REVISION=$(shell git rev-parse --short HEAD)
 
 REGISTRY = docker.io
-REPOSITORY = bluebeluga/sigil
 FROM = bluebeluga/alpine
+REPOSITORY = bluebeluga/sigil
 
 PUSH_REGISTRIES = $(REGISTRY)
